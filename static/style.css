@@ -56,19 +56,22 @@ body {
     width: 100%;
     max-width: 500px;
     min-height: 100vh;
+    max-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: clamp(15px, 3vh, 25px) 10px clamp(80px, 12vh, 120px) 10px;
-    gap: clamp(10px, 2vh, 20px);
+    padding: clamp(12px, 2.5vh, 20px) 10px clamp(70px, 10vh, 90px) 10px;
+    gap: clamp(8px, 1.5vh, 15px);
     box-sizing: border-box;
+    overflow-y: auto;
 }
 
 @media (min-width: 769px) {
     .container {
         max-width: 450px;
-        gap: 15px;
+        gap: 12px;
+        padding: 15px 10px 85px 10px;
     }
 }
 
@@ -144,7 +147,7 @@ p {
 #game-grid {
     display: flex;
     flex-direction: column;
-    gap: clamp(6px, 1vh, 10px);
+    gap: clamp(5px, 0.8vh, 7px);
     width: 100%;
     padding: 0;
     flex-shrink: 0;
@@ -152,7 +155,7 @@ p {
 
 @media (min-width: 769px) {
     #game-grid {
-        gap: 8px;
+        gap: 6px;
     }
 }
 
@@ -175,11 +178,11 @@ p {
 }
 
 .grid-tile {
-    width: clamp(50px, 9vw, 65px);
-    height: clamp(50px, 9vw, 65px);
+    width: clamp(45px, 8vw, 55px);
+    height: clamp(45px, 8vw, 55px);
     border: 2px solid var(--color-tile-border);
     border-radius: 5px;
-    font-size: clamp(1.5rem, 4vw, 1.8rem);
+    font-size: clamp(1.3rem, 3.5vw, 1.5rem);
     font-weight: bold;
     text-transform: uppercase;
     display: flex;
@@ -191,9 +194,9 @@ p {
 
 @media (min-width: 769px) {
     .grid-tile {
-        width: 70px;
-        height: 70px;
-        font-size: 1.8rem;
+        width: 55px;
+        height: 55px;
+        font-size: 1.5rem;
     }
 }
 
@@ -219,21 +222,29 @@ p {
 }
 
 .feedback-circle {
-    width: clamp(24px, 5vw, 30px);
-    height: clamp(24px, 5vw, 30px);
+    width: clamp(20px, 4vw, 24px);
+    height: clamp(20px, 4vw, 24px);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    font-size: clamp(0.8rem, 2vw, 1rem);
+    font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+}
+
+@media (min-width: 769px) {
+    .feedback-circle {
+        width: 22px;
+        height: 22px;
+        font-size: 0.8rem;
+    }
 }
 
 @media (max-width: 768px) {
     .feedback-circle {
-        width: 26px;
-        height: 26px;
-        font-size: 0.9rem;
+        width: 24px;
+        height: 24px;
+        font-size: 0.85rem;
     }
 }
 
@@ -332,12 +343,18 @@ p {
 #keyboard {
     display: flex;
     flex-direction: column;
-    gap: clamp(5px, 0.8vh, 7px);
+    gap: clamp(4px, 0.7vh, 6px);
     width: 100%;
     max-width: 500px;
     padding: 0;
     margin-top: auto;
     flex-shrink: 0;
+}
+
+@media (min-width: 769px) {
+    #keyboard {
+        gap: 5px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -354,9 +371,9 @@ p {
 }
 
 .key {
-    font-size: clamp(0.8rem, 2vw, 1rem);
+    font-size: clamp(0.75rem, 1.8vw, 0.9rem);
     font-weight: bold;
-    padding: clamp(10px, 2vh, 16px) clamp(6px, 1.5vw, 12px);
+    padding: clamp(8px, 1.5vh, 12px) clamp(4px, 1.2vw, 8px);
     border: none;
     background-color: var(--color-key-bg);
     color: var(--color-key-text);
@@ -364,16 +381,16 @@ p {
     cursor: pointer;
     transition: background-color 0.2s;
     -webkit-tap-highlight-color: transparent;
-    min-width: clamp(28px, 5vw, 36px);
-    max-width: 50px;
+    min-width: clamp(26px, 4.5vw, 32px);
+    max-width: 45px;
     flex: 1;
 }
 
 @media (min-width: 769px) {
     .key {
-        padding: 16px 0;
-        font-size: 1rem;
-        min-width: 32px;
+        padding: 12px 0;
+        font-size: 0.9rem;
+        min-width: 30px;
     }
 }
 
