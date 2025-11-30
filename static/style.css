@@ -64,6 +64,12 @@ body {
     box-sizing: border-box;
 }
 
+@media (min-width: 769px) {
+    .container {
+        max-width: 450px;
+    }
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
     .container {
@@ -174,11 +180,11 @@ p {
 }
 
 .grid-tile {
-    width: clamp(45px, 10vw, 60px);
-    height: clamp(45px, 10vw, 60px);
+    width: clamp(50px, 9vw, 65px);
+    height: clamp(50px, 9vw, 65px);
     border: 2px solid var(--color-tile-border);
     border-radius: 5px;
-    font-size: clamp(1.3rem, 5vw, 2rem);
+    font-size: clamp(1.5rem, 4vw, 1.8rem);
     font-weight: bold;
     text-transform: uppercase;
     display: flex;
@@ -186,6 +192,14 @@ p {
     align-items: center;
     transition: all 0.2s ease;
     color: var(--color-text);
+}
+
+@media (min-width: 769px) {
+    .grid-tile {
+        width: 70px;
+        height: 70px;
+        font-size: 1.8rem;
+    }
 }
 
 @media (max-width: 768px) {
@@ -323,8 +337,9 @@ p {
 #keyboard {
     display: flex;
     flex-direction: column;
-    gap: clamp(3px, 0.8vh, 5px);
+    gap: clamp(4px, 0.8vh, 6px);
     width: 100%;
+    max-width: 500px;
     padding: 10px 0;
 }
 
@@ -338,13 +353,13 @@ p {
 .key-row {
     display: flex;
     justify-content: center;
-    gap: 5px;
+    gap: clamp(4px, 1vw, 6px);
 }
 
 .key {
-    font-size: clamp(0.7rem, 2vw, 1rem);
+    font-size: clamp(0.8rem, 2vw, 1rem);
     font-weight: bold;
-    padding: clamp(8px, 2vh, 15px) clamp(5px, 1.5vw, 10px);
+    padding: clamp(10px, 2vh, 16px) clamp(6px, 1.5vw, 12px);
     border: none;
     background-color: var(--color-key-bg);
     color: var(--color-key-text);
@@ -352,8 +367,17 @@ p {
     cursor: pointer;
     transition: background-color 0.2s;
     -webkit-tap-highlight-color: transparent;
-    min-width: clamp(24px, 5vw, 30px);
+    min-width: clamp(28px, 5vw, 36px);
+    max-width: 50px;
     flex: 1;
+}
+
+@media (min-width: 769px) {
+    .key {
+        padding: 16px 0;
+        font-size: 1rem;
+        min-width: 32px;
+    }
 }
 
 @media (max-width: 768px) {
