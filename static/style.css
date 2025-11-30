@@ -59,14 +59,16 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    padding: 10px;
+    justify-content: flex-start;
+    padding: clamp(15px, 3vh, 25px) 10px clamp(80px, 12vh, 120px) 10px;
+    gap: clamp(10px, 2vh, 20px);
     box-sizing: border-box;
 }
 
 @media (min-width: 769px) {
     .container {
         max-width: 450px;
+        gap: 15px;
     }
 }
 
@@ -88,12 +90,7 @@ body {
     align-items: center;
     width: 100%;
     margin-bottom: 0;
-}
-
-@media (max-width: 768px) {
-    .header {
-        margin-bottom: 5px;
-    }
+    flex-shrink: 0;
 }
 
 #theme-toggle-btn {
@@ -121,25 +118,25 @@ body {
 
 h1 {
     margin: 0;
-    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-size: clamp(1.5rem, 4vw, 1.8rem);
 }
 
 @media (max-width: 768px) {
     h1 {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
     }
 }
 
 p {
-    font-size: clamp(0.8rem, 2vw, 1rem);
+    font-size: clamp(0.75rem, 2vw, 0.9rem);
     color: var(--color-text);
-    margin: 5px 0;
+    margin: 0;
 }
 
 @media (max-width: 768px) {
     p {
-        font-size: 0.85rem;
-        margin: 3px 0;
+        font-size: 0.8rem;
+        margin: 0;
     }
 }
 
@@ -147,23 +144,21 @@ p {
 #game-grid {
     display: flex;
     flex-direction: column;
-    gap: clamp(4px, 1vh, 8px);
+    gap: clamp(6px, 1vh, 10px);
     width: 100%;
-    padding: 5px 0;
+    padding: 0;
+    flex-shrink: 0;
 }
 
 @media (min-width: 769px) {
     #game-grid {
-        flex: 1;
-        justify-content: center;
-        max-height: 55vh;
+        gap: 8px;
     }
 }
 
 @media (max-width: 768px) {
     #game-grid {
         gap: 6px;
-        padding: 8px 0;
     }
 }
 
@@ -337,10 +332,12 @@ p {
 #keyboard {
     display: flex;
     flex-direction: column;
-    gap: clamp(4px, 0.8vh, 6px);
+    gap: clamp(5px, 0.8vh, 7px);
     width: 100%;
     max-width: 500px;
-    padding: 10px 0;
+    padding: 0;
+    margin-top: auto;
+    flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
