@@ -1,0 +1,505 @@
+/* --- Color Variables --- */
+:root {
+    --color-bg: #f4f4f4;
+    --color-text: #333;
+    --color-tile-border: #ccc;
+    --color-tile-border-filled: #888;
+    --color-key-bg: #d3d6da;
+    --color-key-text: #333;
+    /* Added for keys */
+    --color-key-bg-hover: #bbbbbb;
+    --color-modal-bg: #fff;
+    --color-feedback-grey-bg: #999;
+    --color-feedback-grey-text: #f4f4f4;
+}
+
+body.dark-mode {
+    --color-bg: #121212;
+    --color-text: #f4f4f4;
+    --color-tile-border: #444;
+    --color-tile-border-filled: #777;
+    --color-key-bg: #3a3a3c;
+    --color-key-text: #f4f4f4;
+    /* Added for keys */
+    --color-key-bg-hover: #555;
+    --color-modal-bg: #222;
+    --color-feedback-grey-bg: #3a3a3c;
+    --color-feedback-grey-text: #aaa;
+}
+
+/* --- END Color Variables --- */
+
+
+/* Basic setup */
+* {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Layout */
+.container {
+    width: 100%;
+    max-width: 500px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .container {
+        min-height: 100vh;
+        max-height: none;
+        justify-content: flex-start;
+        padding: 5px 10px 10px 10px;
+        gap: 8px;
+    }
+}
+
+/* --- Header and Theme Button --- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .header {
+        margin-bottom: 5px;
+    }
+}
+
+#theme-toggle-btn {
+    background: none;
+    border: 2px solid var(--color-tile-border-filled);
+    color: var(--color-text);
+    font-size: 1.3rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+#theme-toggle-btn:hover {
+    background-color: var(--color-key-bg-hover);
+}
+
+/* --- END Header --- */
+
+
+h1 {
+    margin: 0;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.6rem;
+    }
+}
+
+p {
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    color: var(--color-text);
+    margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+    p {
+        font-size: 0.85rem;
+        margin: 3px 0;
+    }
+}
+
+/* Game Grid */
+#game-grid {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 1vh, 8px);
+    width: 100%;
+    padding: 5px 0;
+}
+
+@media (min-width: 769px) {
+    #game-grid {
+        flex: 1;
+        justify-content: center;
+        max-height: 55vh;
+    }
+}
+
+@media (max-width: 768px) {
+    #game-grid {
+        gap: 6px;
+        padding: 8px 0;
+    }
+}
+
+.grid-row {
+    display: flex;
+    align-items: center;
+    gap: clamp(5px, 1.5vw, 10px);
+    justify-content: center;
+}
+
+.grid-tiles {
+    display: flex;
+    gap: clamp(3px, 0.8vw, 5px);
+}
+
+.grid-tile {
+    width: clamp(45px, 10vw, 60px);
+    height: clamp(45px, 10vw, 60px);
+    border: 2px solid var(--color-tile-border);
+    border-radius: 5px;
+    font-size: clamp(1.3rem, 5vw, 2rem);
+    font-weight: bold;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+    color: var(--color-text);
+}
+
+@media (max-width: 768px) {
+    .grid-tile {
+        width: 18vw;
+        height: 18vw;
+        max-width: 55px;
+        max-height: 55px;
+        font-size: 1.5rem;
+    }
+}
+
+/* State for the tile when a letter is entered */
+.grid-tile.filled {
+    border-color: var(--color-tile-border-filled);
+}
+
+/* Feedback Area */
+.feedback-area {
+    display: flex;
+    gap: 5px;
+}
+
+.feedback-circle {
+    width: clamp(24px, 5vw, 30px);
+    height: clamp(24px, 5vw, 30px);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: clamp(0.8rem, 2vw, 1rem);
+}
+
+@media (max-width: 768px) {
+    .feedback-circle {
+        width: 26px;
+        height: 26px;
+        font-size: 0.9rem;
+    }
+}
+
+.feedback-circle.green {
+    background-color: #6aaa64;
+    /* Green */
+    color: white;
+}
+
+.feedback-circle.yellow {
+    background-color: #c9b458;
+    /* Yellow */
+    color: white;
+}
+
+.feedback-circle.grey {
+    background-color: var(--color-feedback-grey-bg);
+    color: var(--color-feedback-grey-text);
+}
+
+
+/* Message Area */
+#message-area {
+    min-height: 25px;
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    font-weight: bold;
+    color: #d9534f;
+    text-align: center;
+    padding: 5px 0;
+}
+
+/* --- Modal Styles --- */
+.modal-backdrop {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+.modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--color-modal-bg);
+    /* MODIFIED: Using variable */
+    color: var(--color-text);
+    /* MODIFIED: Using variable */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 101;
+    text-align: center;
+    min-width: 250px;
+}
+
+/* Class to show the modal */
+.modal-backdrop.show,
+.modal.show {
+    display: block;
+}
+
+#modal-message {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    /* For multi-line messages */
+}
+
+#modal-close-btn {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    background-color: #6aaa64;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#modal-close-btn:hover {
+    background-color: #5a9a54;
+}
+
+
+/* Keyboard */
+#keyboard {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3px, 0.8vh, 5px);
+    width: 100%;
+    padding: 10px 0;
+}
+
+@media (max-width: 768px) {
+    #keyboard {
+        gap: 4px;
+        padding: 8px 0 20px 0;
+    }
+}
+
+.key-row {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.key {
+    font-size: clamp(0.7rem, 2vw, 1rem);
+    font-weight: bold;
+    padding: clamp(8px, 2vh, 15px) clamp(5px, 1.5vw, 10px);
+    border: none;
+    background-color: var(--color-key-bg);
+    color: var(--color-key-text);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    min-width: clamp(24px, 5vw, 30px);
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .key {
+        padding: 10px 4px;
+        font-size: 0.85rem;
+        min-width: 28px;
+    }
+}
+
+.key:hover {
+    background-color: var(--color-key-bg-hover);
+}
+
+/* Greyed out key state */
+.key.greyed {
+    background-color: #555 !important;
+    color: #888 !important;
+    opacity: 0.5;
+    position: relative;
+}
+
+.key.greyed::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background-color: #888;
+    transform: translateY(-50%);
+}
+
+/* Dark mode greyed keys */
+body.dark-mode .key.greyed {
+    background-color: #2a2a2a !important;
+    color: #666 !important;
+}
+
+body.dark-mode .key.greyed::after {
+    background-color: #666;
+}
+
+/* Make Enter and Backspace keys wider */
+.key.wide-key {
+    flex: 1.5;
+    font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+}
+
+/* Footer with social links */
+.game-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(20, 20, 30, 0.98), rgba(20, 20, 30, 0.85));
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(98, 114, 164, 0.2);
+    padding: clamp(0.6rem, 1.5vh, 0.9rem) clamp(1rem, 3vw, 2rem);
+    z-index: 100;
+}
+
+.footer-content {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: clamp(0.8rem, 2vw, 1.5rem);
+    flex-wrap: wrap;
+}
+
+.footer-text {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.social-links {
+    display: flex;
+    gap: clamp(0.7rem, 2vw, 1.1rem);
+    align-items: center;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(2rem, 5vw, 2.5rem);
+    height: clamp(2rem, 5vw, 2.5rem);
+    border-radius: 50%;
+    background: rgba(98, 114, 164, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.social-link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(98, 114, 164, 0.3), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.social-link:hover {
+    background: rgba(98, 114, 164, 0.25);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(98, 114, 164, 0.3);
+}
+
+.social-link:hover::before {
+    opacity: 1;
+}
+
+.social-link:active {
+    transform: translateY(0);
+}
+
+.social-link svg {
+    position: relative;
+    z-index: 1;
+    width: clamp(1rem, 2.5vw, 1.1rem);
+    height: clamp(1rem, 2.5vw, 1.1rem);
+}
+
+/* Adjust body padding to account for footer */
+body {
+    padding-bottom: clamp(3.5rem, 8vh, 5rem);
+}
+
+/* Footer responsiveness */
+@media (max-width: 480px) {
+    .footer-content {
+        justify-content: center;
+        text-align: center;
+        gap: 0.6rem;
+    }
+    
+    .footer-text {
+        width: 100%;
+        margin-bottom: 0.2rem;
+    }
+}
