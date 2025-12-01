@@ -80,8 +80,8 @@ body {
     .container {
         min-height: 100vh;
         max-height: 100vh;
-        justify-content: space-between;
-        padding: 5px 10px 10px 10px;
+        justify-content: flex-start;
+        padding: 5px 10px 80px 10px;
         gap: 4px;
     }
 }
@@ -139,7 +139,7 @@ p {
 @media (max-width: 768px) {
     p {
         font-size: 0.8rem;
-        margin: 0;
+        margin: 0 0 4px 0;
     }
 }
 
@@ -162,6 +162,7 @@ p {
 @media (max-width: 768px) {
     #game-grid {
         gap: 4px;
+        margin-bottom: 4px;
     }
 }
 
@@ -280,6 +281,7 @@ p {
     #message-area {
         min-height: 20px;
         padding: 3px 0;
+        margin-bottom: 6px;
     }
 }
 
@@ -397,7 +399,7 @@ body.dark-mode .modal-x-btn:hover {
     #keyboard {
         gap: 3px;
         padding: 0;
-        margin-top: 0;
+        margin-top: 8px;
     }
 }
 
