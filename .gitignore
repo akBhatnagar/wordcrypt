@@ -32,3 +32,5 @@ Thumbs.db
 
 # Large dictionary file (keep in repo but can be regenerated)
 words_alpha.txt
+WARP.md
+actions_error.txt
