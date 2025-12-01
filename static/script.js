@@ -413,12 +413,25 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.classList.add('show');
     }
 
-    function showModalWithTimer(message) {
-        // Calculate time until midnight
+    function getNextMidnightIST() {
+        // Get current time in IST (UTC+5:30)
         const now = new Date();
-        const tomorrow = new Date(now);
+        const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+        const istTime = new Date(utcTime + (5.5 * 60 * 60 * 1000));
+        
+        // Get next midnight IST
+        const tomorrow = new Date(istTime);
         tomorrow.setDate(tomorrow.getDate() + 1);
         tomorrow.setHours(0, 0, 0, 0);
+        
+        // Convert back to local time for countdown
+        const tomorrowUTC = tomorrow.getTime() - (5.5 * 60 * 60 * 1000);
+        return new Date(tomorrowUTC - (now.getTimezoneOffset() * 60000));
+    }
+
+    function showModalWithTimer(message) {
+        // Calculate time until midnight IST
+        const nextMidnight = getNextMidnightIST();
         
         const timerHtml = '<div id="countdown-timer" style="margin-top: 15px; font-size: 1.1rem; color: var(--color-text);"></div>';
         modalMessage.innerHTML = message + timerHtml;
@@ -427,11 +440,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Start countdown
         const timerElement = document.getElementById('countdown-timer');
-        updateCountdown(timerElement, tomorrow);
+        updateCountdown(timerElement, nextMidnight);
         
         // Update every second
         const interval = setInterval(() => {
-            updateCountdown(timerElement, tomorrow);
+            updateCountdown(timerElement, nextMidnight);
         }, 1000);
         
         // Store interval to clear it later if needed
@@ -526,8 +539,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function getISTDateString() {
+        // Get current date in IST timezone
+        const now = new Date();
+        const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+        const istTime = new Date(utcTime + (5.5 * 60 * 60 * 1000));
+        return istTime.toISOString().split('T')[0];
+    }
+
     function saveGreyedLetters() {
-        const today = new Date().toISOString().split('T')[0];
+        const today = getISTDateString();
         const data = {
             date: today,
             letters: Array.from(greyedLetters)
@@ -540,9 +561,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (saved) {
             try {
                 const data = JSON.parse(saved);
-                const today = new Date().toISOString().split('T')[0];
+                const today = getISTDateString();
                 
-                // Only restore if it's from today
+                // Only restore if it's from today (IST)
                 if (data.date === today && Array.isArray(data.letters)) {
                     greyedLetters = new Set(data.letters);
                     // Update all key appearances
@@ -588,9 +609,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveGameStats(won, attempts) {
         const stats = getStats();
-        const today = new Date().toISOString().split('T')[0];
+        const today = getISTDateString();
         
-        // Only update if this is a new game for today
+        // Only update if this is a new game for today (IST)
         if (stats.lastPlayedDate !== today) {
             stats.gamesPlayed++;
             
@@ -599,9 +620,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 stats.guessDistribution[attempts]++;
                 
                 // Update streak
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                const yesterdayStr = yesterday.toISOString().split('T')[0];
+                const now = new Date();
+                const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+                const istYesterday = new Date(utcTime + (5.5 * 60 * 60 * 1000));
+                istYesterday.setDate(istYesterday.getDate() - 1);
+                const yesterdayStr = istYesterday.toISOString().split('T')[0];
                 
                 if (stats.lastPlayedDate === yesterdayStr) {
                     stats.currentStreak++;

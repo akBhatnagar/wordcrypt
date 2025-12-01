@@ -2,7 +2,7 @@ import os
 import hashlib
 import json
 import random
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from flask import Flask, render_template, request, jsonify, session
 from collections import defaultdict
 
@@ -76,9 +76,17 @@ def save_word_history():
     except Exception as e:
         print(f"Warning: Could not save word history: {e}")
 
+def get_ist_date():
+    """Get current date in IST timezone."""
+    # IST is UTC+5:30
+    ist_offset = timezone(timedelta(hours=5, minutes=30))
+    ist_now = datetime.now(ist_offset)
+    return ist_now.date()
+
 def get_daily_word():
     """Get the daily word - completely random but same all day.
-    Ensures no repeats until all words have been used."""
+    Ensures no repeats until all words have been used.
+    Uses IST timezone for day rollover."""
     global word_history
     
     if not word_list:
@@ -87,8 +95,8 @@ def get_daily_word():
     if not word_history:
         load_word_history()
     
-    # Use today's date
-    today = date.today()
+    # Use today's date in IST
+    today = get_ist_date()
     today_str = today.isoformat()
     
     # Check if we already have a word for today
@@ -127,8 +135,8 @@ def get_daily_word():
     return selected_word
 
 def get_today_key():
-    """Get a unique key for today's date."""
-    return date.today().isoformat()
+    """Get a unique key for today's date in IST."""
+    return get_ist_date().isoformat()
 
 # --- Game Logic ---
 
