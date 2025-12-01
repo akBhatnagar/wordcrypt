@@ -306,7 +306,7 @@ p {
     z-index: 101;
     text-align: center;
     min-width: 250px;
-    position: relative;
+    max-width: 90vw;
 }
 
 /* Class to show the modal */
