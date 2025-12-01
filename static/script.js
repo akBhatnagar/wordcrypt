@@ -21,6 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalMessage = document.getElementById('modal-message');
     const modalCloseBtn = document.getElementById('modal-close-btn');
     const modalXBtn = document.getElementById('modal-x-btn');
+    const statsBtn = document.getElementById('stats-btn');
+    const statsBackdrop = document.getElementById('stats-backdrop');
+    const statsModal = document.getElementById('stats-modal');
+    const statsCloseBtn = document.getElementById('stats-close-btn');
+    const statsXBtn = document.getElementById('stats-x-btn');
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const mobileInput = document.getElementById('mobile-input');
 
@@ -165,6 +170,11 @@ document.addEventListener('DOMContentLoaded', () => {
         modalCloseBtn.addEventListener('click', closeModal);
         modalXBtn.addEventListener('click', closeModal);
         modalBackdrop.addEventListener('click', closeModal);
+        // Statistics buttons
+        statsBtn.addEventListener('click', openStatsModal);
+        statsCloseBtn.addEventListener('click', closeStatsModal);
+        statsXBtn.addEventListener('click', closeStatsModal);
+        statsBackdrop.addEventListener('click', closeStatsModal);
         themeToggleBtn.addEventListener('click', toggleTheme);
         // Tap on grid to focus mobile input
         gridElement.addEventListener('click', focusMobileInput);
@@ -290,9 +300,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Check for game over
             if (result.win) {
                 isGameOver = true;
+                saveGameStats(true, currentRow);
                 setTimeout(() => showModalWithTimer("You Win! 🎉"), 300);
             } else if (currentRow === ROWS) {
                 isGameOver = true;
+                saveGameStats(false, currentRow);
                 // Use innerHTML for the line break
                 setTimeout(() => showModalWithTimer(`You Lost!<br>The word was: ${result.answer}`), 300);
             }
@@ -548,6 +560,124 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     // --- END Keyboard Greying ---
+
+    // --- Statistics Functions ---
+    function getStats() {
+        const saved = localStorage.getItem('gameStats');
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (err) {
+                console.error('Error loading stats:', err);
+            }
+        }
+        // Default stats
+        return {
+            gamesPlayed: 0,
+            gamesWon: 0,
+            currentStreak: 0,
+            maxStreak: 0,
+            guessDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0 },
+            lastPlayedDate: null
+        };
+    }
+
+    function saveStats(stats) {
+        localStorage.setItem('gameStats', JSON.stringify(stats));
+    }
+
+    function saveGameStats(won, attempts) {
+        const stats = getStats();
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Only update if this is a new game for today
+        if (stats.lastPlayedDate !== today) {
+            stats.gamesPlayed++;
+            
+            if (won) {
+                stats.gamesWon++;
+                stats.guessDistribution[attempts]++;
+                
+                // Update streak
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+                
+                if (stats.lastPlayedDate === yesterdayStr) {
+                    stats.currentStreak++;
+                } else {
+                    stats.currentStreak = 1;
+                }
+                
+                if (stats.currentStreak > stats.maxStreak) {
+                    stats.maxStreak = stats.currentStreak;
+                }
+            } else {
+                // Lost - reset streak
+                stats.currentStreak = 0;
+            }
+            
+            stats.lastPlayedDate = today;
+            saveStats(stats);
+        }
+    }
+
+    function openStatsModal() {
+        const stats = getStats();
+        
+        // Update stat values
+        document.getElementById('stat-played').textContent = stats.gamesPlayed;
+        document.getElementById('stat-wins').textContent = stats.gamesWon;
+        document.getElementById('stat-percentage').textContent = 
+            stats.gamesPlayed > 0 ? Math.round((stats.gamesWon / stats.gamesPlayed) * 100) : 0;
+        document.getElementById('stat-streak').textContent = stats.currentStreak;
+        
+        // Update guess distribution
+        const distributionEl = document.getElementById('guess-distribution');
+        distributionEl.innerHTML = '';
+        
+        const maxGuesses = Math.max(...Object.values(stats.guessDistribution), 1);
+        
+        for (let i = 1; i <= 8; i++) {
+            const count = stats.guessDistribution[i] || 0;
+            const percentage = maxGuesses > 0 ? (count / maxGuesses) * 100 : 0;
+            
+            const barEl = document.createElement('div');
+            barEl.className = 'guess-bar';
+            
+            const numberEl = document.createElement('div');
+            numberEl.className = 'guess-number';
+            numberEl.textContent = i;
+            
+            const containerEl = document.createElement('div');
+            containerEl.className = 'guess-bar-container';
+            
+            const fillEl = document.createElement('div');
+            fillEl.className = 'guess-bar-fill';
+            fillEl.style.width = `${Math.max(percentage, 7)}%`;
+            fillEl.textContent = count;
+            
+            // Highlight current game's guess count if won
+            if (gameState && gameState.is_complete && gameState.won && 
+                gameState.guesses && gameState.guesses.length === i) {
+                fillEl.classList.add('current');
+            }
+            
+            containerEl.appendChild(fillEl);
+            barEl.appendChild(numberEl);
+            barEl.appendChild(containerEl);
+            distributionEl.appendChild(barEl);
+        }
+        
+        statsBackdrop.classList.add('show');
+        statsModal.classList.add('show');
+    }
+
+    function closeStatsModal() {
+        statsBackdrop.classList.remove('show');
+        statsModal.classList.remove('show');
+    }
+    // --- END Statistics ---
 
     // --- Start the game ---
     init();
