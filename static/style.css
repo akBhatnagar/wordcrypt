@@ -79,10 +79,10 @@ body {
 @media (max-width: 768px) {
     .container {
         min-height: 100vh;
-        max-height: none;
+        max-height: 100vh;
         justify-content: flex-start;
-        padding: 5px 10px 10px 10px;
-        gap: 8px;
+        padding: 5px 10px 80px 10px;
+        gap: 4px;
     }
 }
 
@@ -139,7 +139,7 @@ p {
 @media (max-width: 768px) {
     p {
         font-size: 0.8rem;
-        margin: 0;
+        margin: 0 0 4px 0;
     }
 }
 
@@ -161,7 +161,8 @@ p {
 
 @media (max-width: 768px) {
     #game-grid {
-        gap: 6px;
+        gap: 4px;
+        margin-bottom: 4px;
     }
 }
 
@@ -202,11 +203,11 @@ p {
 
 @media (max-width: 768px) {
     .grid-tile {
-        width: 18vw;
-        height: 18vw;
-        max-width: 55px;
-        max-height: 55px;
-        font-size: 1.5rem;
+        width: 16vw;
+        height: 16vw;
+        max-width: 50px;
+        max-height: 50px;
+        font-size: 1.3rem;
     }
 }
 
@@ -242,9 +243,9 @@ p {
 
 @media (max-width: 768px) {
     .feedback-circle {
-        width: 24px;
-        height: 24px;
-        font-size: 0.85rem;
+        width: 20px;
+        height: 20px;
+        font-size: 0.75rem;
     }
 }
 
@@ -274,6 +275,14 @@ p {
     color: #d9534f;
     text-align: center;
     padding: 5px 0;
+}
+
+@media (max-width: 768px) {
+    #message-area {
+        min-height: 20px;
+        padding: 3px 0;
+        margin-bottom: 6px;
+    }
 }
 
 /* --- Modal Styles --- */
@@ -377,7 +386,6 @@ body.dark-mode .modal-x-btn:hover {
     width: 100%;
     max-width: 500px;
     padding: 0;
-    margin-top: auto;
     flex-shrink: 0;
 }
 
@@ -389,8 +397,9 @@ body.dark-mode .modal-x-btn:hover {
 
 @media (max-width: 768px) {
     #keyboard {
-        gap: 4px;
-        padding: 8px 0 20px 0;
+        gap: 3px;
+        padding: 0;
+        margin-top: 8px;
     }
 }
 
