@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             gameState = await response.json();
             
+            // Restore greyed letters from localStorage
+            loadGreyedLetters();
+            
             // Restore state if game already in progress
             if (gameState.guesses && gameState.guesses.length > 0) {
                 // Restore previous guesses
@@ -482,6 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const key = letter.toUpperCase();
         greyedLetters.add(key);
         updateKeyAppearance(key);
+        saveGreyedLetters();
     }
 
     function toggleKeyGrey(letter) {
@@ -492,6 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
             greyedLetters.add(key);
         }
         updateKeyAppearance(key);
+        saveGreyedLetters();
     }
 
     function updateKeyAppearance(letter) {
@@ -503,6 +508,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 keyEl.classList.remove('greyed');
             }
         });
+    }
+
+    function saveGreyedLetters() {
+        const today = new Date().toISOString().split('T')[0];
+        const data = {
+            date: today,
+            letters: Array.from(greyedLetters)
+        };
+        localStorage.setItem('greyedLetters', JSON.stringify(data));
+    }
+
+    function loadGreyedLetters() {
+        const saved = localStorage.getItem('greyedLetters');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                const today = new Date().toISOString().split('T')[0];
+                
+                // Only restore if it's from today
+                if (data.date === today && Array.isArray(data.letters)) {
+                    greyedLetters = new Set(data.letters);
+                    // Update all key appearances
+                    data.letters.forEach(letter => {
+                        updateKeyAppearance(letter);
+                    });
+                } else {
+                    // Clear old data
+                    localStorage.removeItem('greyedLetters');
+                }
+            } catch (err) {
+                console.error('Error loading greyed letters:', err);
+                localStorage.removeItem('greyedLetters');
+            }
+        }
     }
     // --- END Keyboard Greying ---
 
