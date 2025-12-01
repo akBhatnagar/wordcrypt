@@ -10,10 +10,11 @@
 
 <body>
     <div class="container">
-        <!-- MODIFICATION: Added a header to hold title and button -->
+        <!-- MODIFICATION: Added a header to hold title and buttons -->
         <div class="header">
+            <button id="stats-btn" class="icon-btn" title="Statistics">📊</button>
             <h1>WordCrypt</h1>
-            <button id="theme-toggle-btn" title="Toggle theme">🌙</button>
+            <button id="theme-toggle-btn" class="icon-btn" title="Toggle theme">🌙</button>
         </div>
         <!-- END MODIFICATION -->
         <p>Guess the 4-letter word in 8 tries.</p>
@@ -38,6 +39,34 @@
         <button id="modal-x-btn" class="modal-x-btn" title="Close">×</button>
         <div id="modal-message"></div>
         <button id="modal-close-btn">Close</button>
+    </div>
+
+    <!-- Statistics Modal -->
+    <div id="stats-backdrop" class="modal-backdrop"></div>
+    <div id="stats-modal" class="modal stats-modal">
+        <button id="stats-x-btn" class="modal-x-btn" title="Close">×</button>
+        <h2>Statistics</h2>
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value" id="stat-played">0</div>
+                <div class="stat-label">Played</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="stat-wins">0</div>
+                <div class="stat-label">Wins</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="stat-percentage">0</div>
+                <div class="stat-label">Win %</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="stat-streak">0</div>
+                <div class="stat-label">Streak</div>
+            </div>
+        </div>
+        <h3>Guess Distribution</h3>
+        <div id="guess-distribution" class="guess-distribution"></div>
+        <button id="stats-close-btn" class="stats-close-btn">Close</button>
     </div>
 
     <!-- Creative Footer -->

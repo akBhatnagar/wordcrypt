@@ -96,7 +96,7 @@ body {
     flex-shrink: 0;
 }
 
-#theme-toggle-btn {
+.icon-btn {
     background: none;
     border: 2px solid var(--color-tile-border-filled);
     color: var(--color-text);
@@ -112,7 +112,7 @@ body {
     transition: background-color 0.2s;
 }
 
-#theme-toggle-btn:hover {
+.icon-btn:hover {
     background-color: var(--color-key-bg-hover);
 }
 
@@ -375,6 +375,111 @@ p {
 
 body.dark-mode .modal-x-btn:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Statistics Modal */
+.stats-modal {
+    min-width: 320px;
+    max-width: 400px;
+    padding: 25px;
+}
+
+.stats-modal h2 {
+    margin: 0 0 20px 0;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.stats-modal h3 {
+    margin: 20px 0 10px 0;
+    font-size: 1.1rem;
+    text-align: left;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--color-text);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--color-text);
+    opacity: 0.8;
+    text-align: center;
+}
+
+.guess-distribution {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 20px;
+}
+
+.guess-bar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.guess-number {
+    font-weight: bold;
+    min-width: 15px;
+    text-align: right;
+}
+
+.guess-bar-container {
+    flex: 1;
+    background-color: var(--color-tile-border);
+    border-radius: 4px;
+    overflow: hidden;
+    min-width: 20px;
+}
+
+.guess-bar-fill {
+    background-color: #6aaa64;
+    color: white;
+    padding: 4px 8px;
+    text-align: right;
+    font-weight: bold;
+    font-size: 0.85rem;
+    min-width: 20px;
+    transition: width 0.5s ease;
+}
+
+.guess-bar-fill.current {
+    background-color: #c9b458;
+}
+
+.stats-close-btn {
+    width: 100%;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    background-color: #6aaa64;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.stats-close-btn:hover {
+    background-color: #5a9a54;
 }
 
 
