@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('game-modal');
     const modalMessage = document.getElementById('modal-message');
     const modalCloseBtn = document.getElementById('modal-close-btn');
+    const modalXBtn = document.getElementById('modal-x-btn');
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const mobileInput = document.getElementById('mobile-input');
 
@@ -160,8 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
         keyboardElement.addEventListener('click', handleKeyClick);
         // Physical keyboard presses
         document.addEventListener('keydown', handleKeyPress);
-        // Modal close button
+        // Modal close buttons
         modalCloseBtn.addEventListener('click', closeModal);
+        modalXBtn.addEventListener('click', closeModal);
         modalBackdrop.addEventListener('click', closeModal);
         themeToggleBtn.addEventListener('click', toggleTheme);
         // Tap on grid to focus mobile input
@@ -446,10 +448,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function closeModal() {
         modalBackdrop.classList.remove('show');
         modal.classList.remove('show');
-        // Only reload if not already complete (to prevent infinite loop)
-        if (!gameState || !gameState.is_complete) {
-            window.location.reload();
+        // Clear countdown interval if it exists
+        if (modal.dataset.intervalId) {
+            clearInterval(modal.dataset.intervalId);
+            delete modal.dataset.intervalId;
         }
+        // Don't reload the page - just close the modal
     }
 
     // --- Theme Functions ---

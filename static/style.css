@@ -306,6 +306,7 @@ p {
     z-index: 101;
     text-align: center;
     min-width: 250px;
+    max-width: 90vw;
 }
 
 /* Class to show the modal */
@@ -336,6 +337,35 @@ p {
 
 #modal-close-btn:hover {
     background-color: #5a9a54;
+}
+
+.modal-x-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--color-text);
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.modal-x-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+}
+
+body.dark-mode .modal-x-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 
