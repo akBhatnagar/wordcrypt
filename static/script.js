@@ -332,6 +332,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const green = guessData.green || 0;
             const yellow = guessData.yellow || 0;
             
+            // Populate the guesses array
+            for (let col = 0; col < COLS; col++) {
+                guesses[index][col] = word[col];
+            }
+            
             // Fill in the tiles
             for (let col = 0; col < COLS; col++) {
                 const tile = getTile(index, col);
