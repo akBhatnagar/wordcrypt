@@ -148,6 +148,8 @@ def check_guess(guess, answer):
     guess = guess.upper()
     answer = answer.upper()
     
+    print(f"[DEBUG check_guess] Guess: {guess}, Answer: {answer}")  # DEBUG
+    
     green = 0
     yellow = 0
     
@@ -176,7 +178,9 @@ def check_guess(guess, answer):
                 answer_used[j] = True
                 break
     
-    return {"green": green, "yellow": yellow}
+    result = {"green": green, "yellow": yellow}
+    print(f"[DEBUG check_guess] Result: {result}")  # DEBUG
+    return result
 
 # --- Session Management ---
 
@@ -290,11 +294,13 @@ def make_guess():
         return jsonify({"error": "Word already guessed"}), 400
     
     answer = get_daily_word()
+    print(f"[DEBUG /guess] Daily word: {answer}, Guess: {guess}")  # DEBUG
     
     # --- Check the guess ---
     result = check_guess(guess, answer)
     win = (result['green'] == 4)
     result['win'] = win
+    print(f"[DEBUG /guess] Result before return: {result}")  # DEBUG
     
     # Check if this is the last guess
     is_last_guess = (current_row == 7)
