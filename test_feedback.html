@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WordCrypt Feedback Tester</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        input { padding: 10px; margin: 5px; font-size: 16px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        .result { margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 5px; }
+        .error { background: #ffcccc; }
+    </style>
+</head>
+<body>
+    <h1>WordCrypt Feedback Tester</h1>
+    <p>Test the check_guess logic directly</p>
+    
+    <div>
+        <label>Guess (4 letters):</label><br>
+        <input type="text" id="guess" maxlength="4" placeholder="READ" value="READ">
+    </div>
+    
+    <div>
+        <label>Answer (4 letters):</label><br>
+        <input type="text" id="answer" maxlength="4" placeholder="DANE" value="DANE">
+    </div>
+    
+    <button onclick="testFeedback()">Test Feedback</button>
+    
+    <div id="result" class="result" style="display:none;"></div>
+    
+    <script>
+        async function testFeedback() {
+            const guess = document.getElementById('guess').value.toUpperCase();
+            const answer = document.getElementById('answer').value.toUpperCase();
+            const resultDiv = document.getElementById('result');
+            
+            if (guess.length !== 4 || answer.length !== 4) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = 'Both guess and answer must be exactly 4 letters!';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            // Calculate expected result (client-side)
+            const expected = checkGuessLocal(guess, answer);
+            
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = `
+                <h3>Local Calculation (JavaScript):</h3>
+                <p><strong>Guess:</strong> ${guess}</p>
+                <p><strong>Answer:</strong> ${answer}</p>
+                <p><strong>Green:</strong> ${expected.green}</p>
+                <p><strong>Yellow:</strong> ${expected.yellow}</p>
+                <hr>
+                <p><em>This is what the feedback SHOULD be based on correct Wordle logic</em></p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+        
+        function checkGuessLocal(guess, answer) {
+            let green = 0;
+            let yellow = 0;
+            
+            const answerUsed = [false, false, false, false];
+            const guessUsed = [false, false, false, false];
+            
+            // First pass: Green matches
+            for (let i = 0; i < 4; i++) {
+                if (guess[i] === answer[i]) {
+                    green++;
+                    answerUsed[i] = true;
+                    guessUsed[i] = true;
+                }
+            }
+            
+            // Second pass: Yellow matches
+            for (let i = 0; i < 4; i++) {
+                if (guessUsed[i]) continue;
+                
+                for (let j = 0; j < 4; j++) {
+                    if (answerUsed[j]) continue;
+                    
+                    if (guess[i] === answer[j]) {
+                        yellow++;
+                        answerUsed[j] = true;
+                        break;
+                    }
+                }
+            }
+            
+            return { green, yellow };
+        }
+    </script>
+</body>
+</html>
