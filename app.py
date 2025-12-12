@@ -10,45 +10,69 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
 # --- Configuration ---
-WORD_LIST_FILE = 'valid_words.txt'
+WORD_LIST_FILE = 'valid_words.txt'  # All valid words for guesses
+COMMON_WORDS_FILE = 'common_words.txt'  # Common words for daily answers
 WORD_HISTORY_FILE = 'word_history.json'
 DEBUG_MODE = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
 PORT = int(os.environ.get('PORT', 5000))
 
 # --- In-Memory Word Storage ---
-valid_words = set()
-word_list = []
+valid_words = set()  # All valid words (for guess validation)
+common_words = []  # Common words only (for daily word selection)
 word_history = {}  # {date: word} - tracks used words
 
 def load_words():
-    """Load words from the text file into a set for validation and a list for selection."""
-    global valid_words, word_list
+    """Load words from text files - valid words for guessing and common words for daily answers."""
+    global valid_words, common_words
     
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(base_dir, WORD_LIST_FILE)
     
+    # Load all valid words (for guess validation)
+    valid_path = os.path.join(base_dir, WORD_LIST_FILE)
     try:
-        with open(file_path, 'r') as f:
+        with open(valid_path, 'r') as f:
             for line in f:
                 word = line.strip().upper()
                 if len(word) == 4 and len(set(word)) == 4:  # Ensure unique letters
                     valid_words.add(word)
-                    word_list.append(word)
         
-        if not word_list:
-            raise ValueError("Word list is empty")
+        if not valid_words:
+            raise ValueError("Valid words list is empty")
         
-        # Sort for consistency
-        word_list.sort()
-        print(f"✓ Loaded {len(word_list)} valid words")
+        print(f"✓ Loaded {len(valid_words)} valid words for guessing")
             
     except FileNotFoundError:
-        print(f"ERROR: {WORD_LIST_FILE} not found at {file_path}")
-        print("Please run generate_wordlist.py first")
+        print(f"ERROR: {WORD_LIST_FILE} not found at {valid_path}")
         raise
     except Exception as e:
-        print(f"ERROR loading words: {e}")
+        print(f"ERROR loading valid words: {e}")
         raise
+    
+    # Load common words (for daily word selection)
+    common_path = os.path.join(base_dir, COMMON_WORDS_FILE)
+    try:
+        with open(common_path, 'r') as f:
+            for line in f:
+                word = line.strip().upper()
+                if len(word) == 4 and len(set(word)) == 4:
+                    common_words.append(word)
+        
+        if not common_words:
+            raise ValueError("Common words list is empty")
+        
+        # Sort for consistency
+        common_words.sort()
+        print(f"✓ Loaded {len(common_words)} common words for daily answers")
+            
+    except FileNotFoundError:
+        print(f"ERROR: {COMMON_WORDS_FILE} not found at {common_path}")
+        print("Falling back to using all valid words")
+        # Fallback: use valid_words if common_words.txt doesn't exist
+        common_words = sorted(list(valid_words))
+    except Exception as e:
+        print(f"ERROR loading common words: {e}")
+        # Fallback: use valid_words
+        common_words = sorted(list(valid_words))
 
 def load_word_history():
     """Load history of previously used daily words."""
@@ -86,10 +110,11 @@ def get_ist_date():
 def get_daily_word():
     """Get the daily word - completely random but same all day.
     Ensures no repeats until all words have been used.
-    Uses IST timezone for day rollover."""
+    Uses IST timezone for day rollover.
+    Only selects from common_words list (not obscure words)."""
     global word_history
     
-    if not word_list:
+    if not common_words:
         load_words()
     
     if not word_history:
@@ -106,21 +131,21 @@ def get_daily_word():
     # Get set of recently used words (to avoid repeats)
     used_words = set(word_history.values())
     
-    # If all words have been used, clear history (start fresh cycle)
-    if len(used_words) >= len(word_list):
-        print("All words used! Starting new cycle.")
+    # If all common words have been used, clear history (start fresh cycle)
+    if len(used_words) >= len(common_words):
+        print("All common words used! Starting new cycle.")
         # Keep only last 100 days to maintain some variety
         cutoff_date = (today - timedelta(days=100)).isoformat()
         word_history = {d: w for d, w in word_history.items() if d >= cutoff_date}
         used_words = set(word_history.values())
         save_word_history()
     
-    # Get available words (not recently used)
-    available_words = [w for w in word_list if w not in used_words]
+    # Get available words (not recently used) from common words only
+    available_words = [w for w in common_words if w not in used_words]
     
     if not available_words:
-        # Fallback: use all words
-        available_words = word_list
+        # Fallback: use all common words
+        available_words = common_words
     
     # TRULY RANDOM selection - unpredictable
     # Use system entropy for randomness
@@ -130,7 +155,7 @@ def get_daily_word():
     word_history[today_str] = selected_word
     save_word_history()
     
-    print(f"Selected daily word for {today_str}: {selected_word}")
+    print(f"Selected daily word for {today_str}: {selected_word} (from {len(common_words)} common words)")
     
     return selected_word
 
