@@ -33,7 +33,7 @@ android {
         applicationId = "com.wordcrypt.app"
         minSdk = flutter.minSdkVersion  // Android 5.0 (Lollipop)
         targetSdk = 34  // Latest Android version
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0.0"
     }
 
