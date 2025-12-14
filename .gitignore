@@ -34,3 +34,5 @@ Thumbs.db
 words_alpha.txt
 WARP.md
 actions_error.txt
+KEYSTORE_PASSWORD.txt
+mobile/android/key.properties
