@@ -206,14 +206,28 @@ def check_guess(guess, answer):
 # --- Session Management ---
 
 def init_game_session():
-    """Initialize or reset game session for today."""
+    """Initialize or reset game session for today.
+    Also validates that session is for the current daily word."""
     today_key = get_today_key()
+    daily_word = get_daily_word()
     
-    # Check if session exists and is for today
+    # Check if session needs to be reset
+    needs_reset = False
+    
     if 'date' not in session or session.get('date') != today_key:
-        # New day or first time - reset session
+        # New day or first time
+        needs_reset = True
+    elif 'daily_word' not in session or session.get('daily_word') != daily_word:
+        # Date matches but word changed (e.g. word_history was reset)
+        # This prevents showing stale feedback from a different word
+        print(f"Session word mismatch: session={session.get('daily_word')}, actual={daily_word}. Resetting.")
+        needs_reset = True
+    
+    if needs_reset:
+        # Reset session
         session.clear()
         session['date'] = today_key
+        session['daily_word'] = daily_word  # Store the word to validate later
         session['guesses'] = []  # Will store {word, green, yellow}
         session['is_complete'] = False
         session['won'] = False
