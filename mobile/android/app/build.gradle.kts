@@ -33,7 +33,7 @@ android {
         applicationId = "com.wordcrypt.app"
         minSdk = flutter.minSdkVersion  // Android 5.0 (Lollipop)
         targetSdk = 35  // Required minimum for Play Store (Android 15)
-        versionCode = 2
+        versionCode = 3
         versionName = "1.0.0"
     }
 
