@@ -274,6 +274,11 @@ def home():
     init_game_session()
     return render_template('index.html')
 
+@app.route('/privacy-policy')
+def privacy_policy():
+    """Serve the privacy policy page."""
+    return render_template('privacy_policy.html')
+
 @app.route('/game-state', methods=['GET'])
 def game_state():
     """Get current game state."""

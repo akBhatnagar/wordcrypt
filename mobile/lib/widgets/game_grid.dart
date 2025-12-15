@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../providers/game_provider.dart';
+import '../models/game_state.dart';
 import 'package:provider/provider.dart';
 
 class GameGrid extends StatelessWidget {

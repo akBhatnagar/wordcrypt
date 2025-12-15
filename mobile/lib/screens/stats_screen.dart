@@ -28,9 +28,9 @@ class _StatsScreenState extends State<StatsScreen> {
   @override
   Widget build(BuildContext context) {
     if (_stats == null) {
-      return const Scaffold(
-        appBar: AppBar(title: Text('Statistics')),
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        appBar: AppBar(title: const Text('Statistics')),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
