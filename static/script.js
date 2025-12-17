@@ -273,6 +273,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 const errorData = await response.json();
                 const errorMsg = errorData.error || "An error occurred";
+
+                // Handle server/client desync (e.g., session reset). Auto-resync instead of forcing refresh.
+                if (response.status === 409 && errorMsg.toLowerCase().includes('row mismatch')) {
+                    await loadGameState();
+                    currentCol = 0;
+                    showMessage("Synced game state. Please try again.");
+                    return;
+                }
                 
                 // Check if game is already complete
                 if (errorMsg.includes('already completed')) {
