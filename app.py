@@ -12,14 +12,16 @@ app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-producti
 # --- Configuration ---
 WORD_LIST_FILE = 'valid_words.txt'  # All valid words for guesses
 COMMON_WORDS_FILE = 'common_words.txt'  # Common words for daily answers
-WORD_HISTORY_FILE = 'word_history.json'
 DEBUG_MODE = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
 PORT = int(os.environ.get('PORT', 5000))
 
 # --- In-Memory Word Storage ---
 valid_words = set()  # All valid words (for guess validation)
 common_words = []  # Common words only (for daily word selection)
-word_history = {}  # {date: word} - tracks used words
+
+# Deterministic daily cycle (avoids cross-worker randomness / file races in production)
+_daily_cycle = None  # list[str]
+_daily_cycle_seed = None  # str
 
 def load_words():
     """Load words from text files - valid words for guessing and common words for daily answers."""
@@ -74,31 +76,29 @@ def load_words():
         # Fallback: use valid_words
         common_words = sorted(list(valid_words))
 
-def load_word_history():
-    """Load history of previously used daily words."""
-    global word_history
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(base_dir, WORD_HISTORY_FILE)
-    
-    try:
-        with open(file_path, 'r') as f:
-            word_history = json.load(f)
-    except FileNotFoundError:
-        word_history = {}
-    except Exception as e:
-        print(f"Warning: Could not load word history: {e}")
-        word_history = {}
+def _compute_daily_cycle_seed() -> str:
+    """
+    Compute a stable seed for daily-word rotation.
+    Uses SECRET_KEY so the sequence isn't trivially guessable, but remains deterministic.
+    """
+    return os.environ.get('DAILY_WORD_SEED') or app.secret_key
 
-def save_word_history():
-    """Save word history to file."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(base_dir, WORD_HISTORY_FILE)
-    
-    try:
-        with open(file_path, 'w') as f:
-            json.dump(word_history, f, indent=2)
-    except Exception as e:
-        print(f"Warning: Could not save word history: {e}")
+def _get_daily_cycle():
+    """Get a deterministic shuffled cycle of common_words (stable across workers)."""
+    global _daily_cycle, _daily_cycle_seed
+    if not common_words:
+        load_words()
+
+    seed = _compute_daily_cycle_seed()
+    if _daily_cycle is None or _daily_cycle_seed != seed or len(_daily_cycle) != len(common_words):
+        # Stable shuffle based on seed
+        seed_int = int(hashlib.sha256(seed.encode('utf-8')).hexdigest(), 16)
+        rng = random.Random(seed_int)
+        cycle = list(common_words)
+        rng.shuffle(cycle)
+        _daily_cycle = cycle
+        _daily_cycle_seed = seed
+    return _daily_cycle
 
 def get_ist_date():
     """Get current date in IST timezone."""
@@ -108,56 +108,19 @@ def get_ist_date():
     return ist_now.date()
 
 def get_daily_word():
-    """Get the daily word - completely random but same all day.
-    Ensures no repeats until all words have been used.
-    Uses IST timezone for day rollover.
-    Only selects from common_words list (not obscure words)."""
-    global word_history
-    
-    if not common_words:
-        load_words()
-    
-    if not word_history:
-        load_word_history()
-    
-    # Use today's date in IST
+    """
+    Get the daily word (deterministic, stable across workers).
+    - Uses IST timezone for day rollover
+    - Uses a seeded shuffle of common_words so there are no repeats until the list cycles
+    - Avoids writing/reading shared files, preventing session resets in multi-worker deployments
+    """
+    cycle = _get_daily_cycle()
+    if not cycle:
+        raise ValueError("Common words list is empty")
+
     today = get_ist_date()
-    today_str = today.isoformat()
-    
-    # Check if we already have a word for today
-    if today_str in word_history:
-        return word_history[today_str]
-    
-    # Get set of recently used words (to avoid repeats)
-    used_words = set(word_history.values())
-    
-    # If all common words have been used, clear history (start fresh cycle)
-    if len(used_words) >= len(common_words):
-        print("All common words used! Starting new cycle.")
-        # Keep only last 100 days to maintain some variety
-        cutoff_date = (today - timedelta(days=100)).isoformat()
-        word_history = {d: w for d, w in word_history.items() if d >= cutoff_date}
-        used_words = set(word_history.values())
-        save_word_history()
-    
-    # Get available words (not recently used) from common words only
-    available_words = [w for w in common_words if w not in used_words]
-    
-    if not available_words:
-        # Fallback: use all common words
-        available_words = common_words
-    
-    # TRULY RANDOM selection - unpredictable
-    # Use system entropy for randomness
-    selected_word = random.choice(available_words)
-    
-    # Save to history
-    word_history[today_str] = selected_word
-    save_word_history()
-    
-    print(f"Selected daily word for {today_str}: {selected_word} (from {len(common_words)} common words)")
-    
-    return selected_word
+    idx = today.toordinal() % len(cycle)
+    return cycle[idx]
 
 def get_today_key():
     """Get a unique key for today's date in IST."""
@@ -218,7 +181,7 @@ def init_game_session():
         # New day or first time
         needs_reset = True
     elif 'daily_word' not in session or session.get('daily_word') != daily_word:
-        # Date matches but word changed (e.g. word_history was reset)
+        # Date matches but word changed (should be extremely rare with deterministic daily word)
         # This prevents showing stale feedback from a different word
         print(f"Session word mismatch: session={session.get('daily_word')}, actual={daily_word}. Resetting.")
         needs_reset = True
@@ -311,9 +274,13 @@ def make_guess():
     if not isinstance(current_row, int) or current_row < 0 or current_row >= 8:
         return jsonify({"error": "Invalid row number"}), 400
     
-    # Check row matches session
+    # Check row matches session (return sync info instead of forcing refresh)
     if current_row != state['current_row']:
-        return jsonify({"error": "Row mismatch. Please refresh the page."}), 400
+        return jsonify({
+            "error": "Row mismatch",
+            "expected_row": state['current_row'],
+            "state": state
+        }), 409
     
     if len(guess) != 4:
         return jsonify({"error": "Guess must be 4 letters"}), 400
